@@ -1,0 +1,77 @@
+﻿<html>
+    <head>
+        <style type="text/css">
+            .tableClass{
+                border-style: solid;
+            }
+            .tableClass tr{
+                height: 50px;
+                text-align: center;
+            }
+            .tableClass td{
+                width: 50px;
+                text-align: center;
+            }
+            .tableWhiteCell
+            {
+                border-style: none; 
+                border: 0px; 
+                border-color: black;
+                background-color:White;
+            }
+            .tableBlackCell
+            {
+                border-style: none; 
+                border: 0px;
+                border-color: black;
+                background-color: #bdbdbd;
+            }
+            .figure img
+            {
+                height:50px;
+                width:50px;
+            }
+            .no-close .ui-dialog-titlebar-close {
+                display: none;
+            }
+            /*.WhiteRookButtonClass {
+                background-image: ""
+            }
+            .WhiteQueenButtonClass {
+                background-image: ""
+            }
+            .WhiteBishopButtonClass {
+                background-image: ""
+            }
+            .WhiteKnightButtonClass {
+                background-image: ""
+            }
+            .BlackRookButtonClass {
+                background-image: ""
+            }
+            .BlackQueenButtonClass {
+                background-image: ""
+            }
+            .BlackBishopButtonClass {
+                background-image: ""
+            }
+            .BlackKnightButtonClass {
+                background-image: ""
+            }*/
+        </style>
+        <link type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+        <script src="http://localhost:81/socket.io/socket.io.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js" type="text/javascript"></script>
+        <script type="text/javascript" src="main.js"></script>
+        <title></title>
+    </head>
+    <body onload="Initialize(document.getElementById('tableDiv'), 8);">
+        <!--<p id="textParagr" style="font-family: 'Segoe UI' Tahoma">Input field size </p>
+        <input id="tableSize" style="width: 100px;" />
+        <input id="tableSizeButton" type="button" value="Set" onclick=" this.value = 'Refresh'; Initialize(document.getElementById('tableDiv'), 8); "/>-->
+        <div id="tableDiv" ></div>
+        <br /><br />
+        <div id="chooseDialogDiv" title="Choose figure"></div>
+    </body>
+</html>
