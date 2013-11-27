@@ -1,6 +1,91 @@
-kHG3CZdnhgWOp4XsS-Yf connected.
-2qHrwvUwvkGGjCRLS-Ye connected.
-Room #kHG3CZdnhgWOp4XsS-Yf has been created.
-Room #kHG3CZdnhgWOp4XsS-Yf is full.
+FjLYT_uyhMh-YVg4WoeN connected.
+xc-L0eq0EZtGSa9lWoeO connected.
+Room #FjLYT_uyhMh-YVg4WoeN has been created.
+Room #FjLYT_uyhMh-YVg4WoeN is full.
+0 game started.
+1 game started.
+8I9K0EqXkbMUOC4AXCNM connected.
+gd--rfneFVWXGrPAXCNN connected.
+Room #gd--rfneFVWXGrPAXCNN has been created.
+Room #gd--rfneFVWXGrPAXCNN is full.
+0 game started.
+1 game started.
+CUNmvrQyL73fRf7OXn0n connected.
+sYMt8Cbtw578HmZ4Xn0o connected.
+Room #sYMt8Cbtw578HmZ4Xn0o has been created.
+Room #sYMt8Cbtw578HmZ4Xn0o is full.
+0 game started.
+1 game started.
+iq73D4J65k_Iqy6fYh1S connected.
+M1AePTuPCSKTaPLdYh1T connected.
+Room #iq73D4J65k_Iqy6fYh1S has been created.
+Room #iq73D4J65k_Iqy6fYh1S is full.
+0 game started.
+1 game started.
+bcaG-lcT8NQfE45JZE6E connected.
+ItHxl2qCRYIAM2mjZE6F connected.
+Room #ItHxl2qCRYIAM2mjZE6F has been created.
+Room #ItHxl2qCRYIAM2mjZE6F is full.
+0 game started.
+1 game started.
+m1OPB_ktdkOp4OA8aANb connected.
+cPApJiIcfYn3TnoKaANc connected.
+Room #m1OPB_ktdkOp4OA8aANb has been created.
+Room #m1OPB_ktdkOp4OA8aANb is full.
+0 game started.
+1 game started.
+9lhSOsiM0awfG-PVaWd_ connected.
+h06qUcGrHxa_NyoiaWeA connected.
+On29ex0u5TQcxHZTaWeB connected.
+Room #On29ex0u5TQcxHZTaWeB has been created.
+Room #On29ex0u5TQcxHZTaWeB is full.
+0 game started.
+1 game started.
+NgajipL47sVR4r4IcKMI connected.
+eMgF5n2fyWbQ_rnocKMJ connected.
+Room #eMgF5n2fyWbQ_rnocKMJ has been created.
+Room #eMgF5n2fyWbQ_rnocKMJ is full.
+0 game started.
+1 game started.
+0 disconnected. [object Object]
+r4w1gqEgdyyvoSMzcKMK connected.
+mCtMMDFMX6tn8YFJcKML connected.
+Room #r4w1gqEgdyyvoSMzcKMK has been created.
+Room #r4w1gqEgdyyvoSMzcKMK is full.
+0 game started.
+1 game started.
+1 disconnected. [object Object]
+hCT8fEnN65MLWwo2dIfG connected.
+dNPnD-mkQB6kU4hgdIfH connected.
+Room #dNPnD-mkQB6kU4hgdIfH has been created.
+Room #dNPnD-mkQB6kU4hgdIfH is full.
+0 game started.
+1 game started.
+0 disconnected. [object Object]
+Make move called 
+hCT8fEnN65MLWwo2dIfG maked move from 1 1 to 1 2
+Make move valid 
+MSr9liDjJmitCkasd2tj connected.
+mhVB3hkoG_CXxY91d2tk connected.
+Room #mhVB3hkoG_CXxY91d2tk has been created.
+Room #mhVB3hkoG_CXxY91d2tk is full.
+0 game started.
+1 game started.
+gtgViFrPUfqlhJlld-LI connected.
+aQTDufRnl9U8VxCod-LJ connected.
+Room #gtgViFrPUfqlhJlld-LI has been created.
+Room #gtgViFrPUfqlhJlld-LI is full.
+0 game started.
+1 game started.
+iW5eHOe-g4KNe1EgfjYv connected.
+7hm72S3S2m4dQJ-MfjYw connected.
+Room #7hm72S3S2m4dQJ-MfjYw has been created.
+Room #7hm72S3S2m4dQJ-MfjYw is full.
+0 game started.
+1 game started.
+JawQUU6iXS4i0wVSgkJU connected.
+PBc1--Q0_Nu5sqb5gkJV connected.
+Room #JawQUU6iXS4i0wVSgkJU has been created.
+Room #JawQUU6iXS4i0wVSgkJU is full.
 0 game started.
 1 game started.

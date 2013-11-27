@@ -72,15 +72,29 @@ io.sockets.on('connection', function (socket) {
 	        Log(socketId + " game over.\r\n");
 	    }
 	});
-	socket.on("disconnect", function (data) {
-	    Log("Disconnect called.\r\n");
-	    for (var socketId in io.sockets.clients(AloneRoom)) {
-	        if (socket.id != socketId) {
-	            io.sockets.clients(AloneRoom)[socketId].disconnect();
-	            Log(socketId + " disconnected.\r\n");
-	        }
+	socket.once("disconnect", function (data) {
+	    
+	    if (io.sockets.clients(AloneRoom).length != 0) {
+	        console.log("Disconnect called " + socket.id + "\r\n");
+	        socket.leave(AloneRoom);
 	    }
-	    io.sockets.in(AloneRoom).leave(AloneRoom);
+
+	    var roomClients = io.sockets.clients(AloneRoom);
+	    if (roomClients.length != 0) {
+	        console.log("Disconnect called " + roomClients[0].id + "\r\n");
+	        roomClients[0].disconnect();
+	        roomClients[0].leave();
+	    }
+
+	    //console.log("Disconnect called. " + socket.id + "\r\n");
+	    //for (var socketId in roomClients) { 
+	    //    if (socket != roomClients[socketId]) {
+	    //        console.log("Disconnect called. " + roomClients[socketId].id + "\r\n");
+	    //        io.sockets.clients(AloneRoom)[socketId].disconnect();
+	    //        //Log(socketId + " disconnected. " + roomClients[socketId] + "\r\n");
+	    //    }
+	    //    roomClients[socketId].leave(AloneRoom);
+	    //}
 	});
     //написать обработчик на ondisconnect
 });
