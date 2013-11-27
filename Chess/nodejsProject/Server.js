@@ -14,7 +14,7 @@ io.sockets.on('connection', function (socket) {
 	socket.gameStatus = "connected";
 	Log(socket.id + " connected.\r\n");
 
-	socket.on('readyToPlay', function(data) {		
+	socket.on('readyToPlay', function() {		
 		if (socket.gameStatus != "connected")
 			return;
 
@@ -46,7 +46,7 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on("makeMove", function (data) {
 	    Log("Make move called \r\n");
-	    console.log(socket.gameStatus);
+	    //console.log(socket.gameStatus);
 		if (socket.gameStatus != "gameStarted")
 		    return;
 
@@ -57,17 +57,30 @@ io.sockets.on('connection', function (socket) {
 			Log(socket.id + " maked move from " + data.xfrom + " " + data.yfrom + " to " + data.xto + " " + data.yto + "\r\n");
 		}
 		else {
-			io.sockets.in(AloneRoom).emit("disconnect", false);
-			io.sockets.in(AloneRoom).disconnect();
+		    for (var socketId in io.sockets.clients(AloneRoom)) {
+		        io.sockets.clients(AloneRoom)[socketId].disconnect();
+		        Log(socketId + " disconnected.\r\n");
+		    }
+			io.sockets.in(AloneRoom).leave(AloneRoom);
 			Log(AloneRoom + " must be leaved.\r\n");
-			//io.sockets.in(AloneRoom).leave(AloneRoom);
+			
 		}
 	});
 	socket.on("gameOver", function (data) {
-		
+	    for (var socketId in io.sockets.clients(AloneRoom)) {
+	        io.sockets.clients(AloneRoom)[socketId].disconnect();
+	        Log(socketId + " game over.\r\n");
+	    }
 	});
 	socket.on("disconnect", function (data) {
-
+	    Log("Disconnect called.\r\n");
+	    for (var socketId in io.sockets.clients(AloneRoom)) {
+	        if (socket.id != socketId) {
+	            io.sockets.clients(AloneRoom)[socketId].disconnect();
+	            Log(socketId + " disconnected.\r\n");
+	        }
+	    }
+	    io.sockets.in(AloneRoom).leave(AloneRoom);
 	});
     //написать обработчик на ondisconnect
 });
