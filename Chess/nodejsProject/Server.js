@@ -23,13 +23,16 @@ io.sockets.on('connection', function (socket) {
 			socket.join(AloneRoom);
 			Log("Room #" + AloneRoom + " is full.\r\n");
 			io.sockets.in(AloneRoom).emit("gameStarted");
-			AloneRoom = undefined;
 		    //io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
 
 			for (var socketId in io.sockets.clients(AloneRoom)) {
-			    io.sockets.sockets[socketId].set('gameStatus', 'gameStarted');
+			    console.log(socketId);
+			    console.log(io.sockets.clients(AloneRoom)[socketId].gameStatus);
+			    io.sockets.clients(AloneRoom)[socketId].gameStatus = "gameStarted";
+			    console.log(io.sockets.clients(AloneRoom)[socketId].gameStatus);
 			    Log(socketId + " game started.\r\n");
 			}
+			AloneRoom = undefined;
 		}
 		else
 		{
@@ -42,8 +45,12 @@ io.sockets.on('connection', function (socket) {
 		
 	});
 	socket.on("makeMove", function (data) {
+	    Log("Make move called \r\n");
+	    console.log(socket.gameStatus);
 		if (socket.gameStatus != "gameStarted")
-			return;
+		    return;
+
+		Log("Make move valid \r\n");
 
 		if (data.xfrom && data.yfrom && data.xto && data.yto) {
 			socket.broadcast.to(AloneRoom).emit("makeMove", data);
@@ -62,4 +69,5 @@ io.sockets.on('connection', function (socket) {
 	socket.on("disconnect", function (data) {
 
 	});
+    //написать обработчик на ondisconnect
 });
