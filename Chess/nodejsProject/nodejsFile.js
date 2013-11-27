@@ -12,8 +12,9 @@ io.sockets.on("connection", function(socket){
 	socket.on("select_room", function(data){
 			console.log("Socket { id: " + socket.id + " } going to room " + data);
 			socket.join(data);
+			console.log(io.sockets.in('room1'));
 	});
-		socket.on("leave_room", function(data){
+	socket.on("leave_room", function(data){
 			console.log("Socket { id: " + socket.id + " } going to room " + data);
 			socket.leave(data);
 	});

@@ -12,6 +12,8 @@ function Log(data)
 io.sockets.on('connection', function (socket) {
 	socket.emit("connected");
 	socket.gameStatus = "connected";
+	Log(socket.id + " connected.\r\n");
+
 	socket.on('readyToPlay', function(data) {		
 		if (socket.gameStatus != "connected")
 			return;
@@ -19,16 +21,19 @@ io.sockets.on('connection', function (socket) {
 		if (AloneRoom)
 		{
 			socket.join(AloneRoom);
-			Log("Room #" + AloneRoom + "is full.\r\n");
+			Log("Room #" + AloneRoom + " is full.\r\n");
 			io.sockets.in(AloneRoom).emit("gameStarted");
 			AloneRoom = undefined;
-			io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
+			//io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
+			for (var socketId in io.sockets.clients(AloneRoom)) {
+				socketId.set('gameStatus', 'gameStarted');
+			}
 		}
 		else
 		{
 			AloneRoom = socket.id;
 			socket.join(AloneRoom);
-			Log("Room #" + AloneRoom + "has been created.\r\n");
+			Log("Room #" + AloneRoom + " has been created.\r\n");
 			socket.emit("waitingForPlayers");
 			socket.gameStatus = "waitingForPlayers";
 		}
@@ -45,7 +50,7 @@ io.sockets.on('connection', function (socket) {
 		else {
 			io.sockets.in(AloneRoom).emit("disconnect", false);
 			io.sockets.in(AloneRoom).disconnect();
-			Log(AloneRoom + "must be leaved.\r\n");
+			Log(AloneRoom + " must be leaved.\r\n");
 			//io.sockets.in(AloneRoom).leave(AloneRoom);
 		}
 	});
