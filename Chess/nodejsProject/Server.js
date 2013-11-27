@@ -75,13 +75,16 @@ io.sockets.on('connection', function (socket) {
 	socket.once("disconnect", function (data) {
 	    
 	    if (io.sockets.clients(AloneRoom).length != 0) {
-	        console.log("Disconnect called " + socket.id + "\r\n");
+	        console.log(io.sockets.clients(AloneRoom).length);
+	        console.log("Disconnect 1 called " + socket.id + "\r\n");
 	        socket.leave(AloneRoom);
+	        
 	    }
 
 	    var roomClients = io.sockets.clients(AloneRoom);
+	    console.log(roomClients.length);
 	    if (roomClients.length != 0) {
-	        console.log("Disconnect called " + roomClients[0].id + "\r\n");
+	        console.log("Disconnect 2 called " + roomClients[0].id + "\r\n");
 	        roomClients[0].disconnect();
 	        roomClients[0].leave();
 	    }
