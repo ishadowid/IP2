@@ -24,9 +24,11 @@ io.sockets.on('connection', function (socket) {
 			Log("Room #" + AloneRoom + " is full.\r\n");
 			io.sockets.in(AloneRoom).emit("gameStarted");
 			AloneRoom = undefined;
-			//io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
+		    //io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
+
 			for (var socketId in io.sockets.clients(AloneRoom)) {
-				socketId.set('gameStatus', 'gameStarted');
+			    io.sockets.sockets[socketId].set('gameStatus', 'gameStarted');
+			    Log(socketId + " game started.\r\n");
 			}
 		}
 		else
