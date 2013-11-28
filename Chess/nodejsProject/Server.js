@@ -13,32 +13,31 @@ io.sockets.on('connection', function (socket) {
 	socket.emit("connected");
 	socket.gameStatus = "connected";
 	Log(socket.id + " connected.\r\n");
-
+	var inroom = undefined;
 	socket.on('readyToPlay', function() {		
 		if (socket.gameStatus != "connected")
 			return;
 
 		if (AloneRoom)
 		{
-			socket.join(AloneRoom);
-			Log("Room #" + AloneRoom + " is full.\r\n");
-			io.sockets.in(AloneRoom).emit("gameStarted");
-		    //io.sockets.in(AloneRoom).set("gameStatus", "gameStarted"); //???
+		    inroom = AloneRoom;
+		    socket.join(inroom);
+		    Log("Room #" + inroom + " is full.\r\n");
+			io.sockets.in(inroom).emit("gameStarted");
 
-			for (var socketId in io.sockets.clients(AloneRoom)) {
-			    console.log(socketId);
-			    console.log(io.sockets.clients(AloneRoom)[socketId].gameStatus);
-			    io.sockets.clients(AloneRoom)[socketId].gameStatus = "gameStarted";
-			    console.log(io.sockets.clients(AloneRoom)[socketId].gameStatus);
+			for (var socketId in io.sockets.clients(inroom)) {
+			    io.sockets.clients(inroom)[socketId].gameStatus = "gameStarted";
+			    console.log(io.sockets.clients(inroom)[socketId].gameStatus);
 			    Log(socketId + " game started.\r\n");
 			}
 			AloneRoom = undefined;
 		}
 		else
 		{
-			AloneRoom = socket.id;
-			socket.join(AloneRoom);
-			Log("Room #" + AloneRoom + " has been created.\r\n");
+		    AloneRoom = socket.id;
+		    inroom = AloneRoom;
+		    socket.join(inroom);
+		    Log("Room #" + inroom + " has been created.\r\n");
 			socket.emit("waitingForPlayers");
 			socket.gameStatus = "waitingForPlayers";
 		}
@@ -46,58 +45,45 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on("makeMove", function (data) {
 	    Log("Make move called \r\n");
-	    //console.log(socket.gameStatus);
 		if (socket.gameStatus != "gameStarted")
 		    return;
 
 		Log("Make move valid \r\n");
 
-		if (data.xfrom && data.yfrom && data.xto && data.yto) {
-			socket.broadcast.to(AloneRoom).emit("makeMove", data);
-			Log(socket.id + " maked move from " + data.xfrom + " " + data.yfrom + " to " + data.xto + " " + data.yto + "\r\n");
+		if (data.xfrom == undefined && data.yfrom == undefined && data.xto == undefined && data.yto == undefined) {
+		    this.disconnect();
+		    Log("Wrong coordinates from socket " + socket.id + "\r\n");
+		    return;
 		}
-		else {
-		    for (var socketId in io.sockets.clients(AloneRoom)) {
-		        io.sockets.clients(AloneRoom)[socketId].disconnect();
-		        Log(socketId + " disconnected.\r\n");
-		    }
-			io.sockets.in(AloneRoom).leave(AloneRoom);
-			Log(AloneRoom + " must be leaved.\r\n");
-			
-		}
+
+		socket.broadcast.to(inroom).emit("makeMove", data);
+		Log(socket.id + " maked move from " + data.xfrom + " " + data.yfrom + " to " + data.xto + " " + data.yto + "\r\n");
+	    
 	});
 	socket.on("gameOver", function (data) {
-	    for (var socketId in io.sockets.clients(AloneRoom)) {
-	        io.sockets.clients(AloneRoom)[socketId].disconnect();
+	    for (var socketId in io.sockets.clients(inroom)) {
+	        io.sockets.clients(inroom)[socketId].disconnect();
 	        Log(socketId + " game over.\r\n");
 	    }
 	});
 	socket.once("disconnect", function (data) {
-	    
-	    if (io.sockets.clients(AloneRoom).length != 0) {
-	        console.log(io.sockets.clients(AloneRoom).length);
-	        console.log("Disconnect 1 called " + socket.id + "\r\n");
-	        socket.leave(AloneRoom);
-	        
-	    }
+	    console.log("Disconnected started " + socket.id);
 
-	    var roomClients = io.sockets.clients(AloneRoom);
-	    console.log(roomClients.length);
-	    if (roomClients.length != 0) {
-	        console.log("Disconnect 2 called " + roomClients[0].id + "\r\n");
+	    var roomClients = io.sockets.clients(inroom);
+	    if (roomClients[0].lastClient == true)
+	        return;
+
+	    console.log(socket.id + " In handler (call 1) " + roomClients.length);
+	    if (roomClients.length <= 1)
+	        return;
+	    console.log(socket.id + " In handler (call 2) " + roomClients.length);
+
+	    roomClients[0].lastClient = true;
+	    if (roomClients[0] == socket)
+	        roomClients[1].disconnect();
+	    else
 	        roomClients[0].disconnect();
-	        roomClients[0].leave();
-	    }
 
-	    //console.log("Disconnect called. " + socket.id + "\r\n");
-	    //for (var socketId in roomClients) { 
-	    //    if (socket != roomClients[socketId]) {
-	    //        console.log("Disconnect called. " + roomClients[socketId].id + "\r\n");
-	    //        io.sockets.clients(AloneRoom)[socketId].disconnect();
-	    //        //Log(socketId + " disconnected. " + roomClients[socketId] + "\r\n");
-	    //    }
-	    //    roomClients[socketId].leave(AloneRoom);
-	    //}
+	    console.log("Disconnected finished " + socket.id);
 	});
-    //написать обработчик на ondisconnect
 });
