@@ -806,12 +806,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                         console.log(castlingString);
                     if (currentChessSelected.color == "black") {
                         if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
-                            connection.emit("gameOver");
+                            //connection.emit("gameOver");
+							connection.disconnect();
                             alert("Мат белому королю");
                     }
                     else {
                         if (GameOver = checkMat(BlackArray[BlackKingIndex]))
-                            connection.emit("gameOver");
+                            //connection.emit("gameOver");
+							connection.disconnect();
                             alert("Мат черному королю");
                     }
                     if (newFigure == undefined && clientColor == currStepChess)
