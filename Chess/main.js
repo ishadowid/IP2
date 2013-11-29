@@ -242,6 +242,10 @@ var currentChessSelected,
     clientColor;
 
 //$(document).ready(Initialize(document.getElementById('tableDiv'), 8));
+function InitializeComponents(obj, size)
+{
+
+}
 
 function Initialize(obj, size) {
     currentChessSelected = chessSelectedBackgroundColor = null, currStepChess = true, blockChess = GameOver = false, changingFigure = null;
@@ -250,7 +254,7 @@ function Initialize(obj, size) {
         for (var i = 0; i < size; i++) {
             str += "<tr>";
             for (var j = 0; j < size; j++) {
-                str += "<td onclick = \"onChessClick(" + j + ", " + i + ");\" class=\"";
+                str += "<td onclick = \" if (clientColor == currStepChess) onChessClick(" + j + ", " + i + ");\" class=\"";
                 str += (i + j) % 2 == 0 ? 'tableWhiteCell\">' : ('tableBlackCell\"> ');
                 str += "</td>";
             }
@@ -260,12 +264,7 @@ function Initialize(obj, size) {
         obj.innerHTML = str;
     }
 
-    connection = io.connect("http://localhost:81");
-    connection.on("message", function (msg) {
-        console.log(msg);
-        onChessClick(msg.yfrom, msg.xfrom);
-        onChessClick(msg.yto, msg.xto);
-    });
+    
     ChessField = [[], [], [], [], [], [], [], []];
     for (var i = 0; i < 8; i++)
         for (var j = 0; j < 8; j++)
@@ -309,7 +308,27 @@ function Initialize(obj, size) {
     for (var i = 0; i < WhiteArray.length; i++)
         ChessField[WhiteArray[i].X][WhiteArray[i].Y] = WhiteArray[i];
 
-    paintChess();
+    connection = io.connect("http://localhost:81");
+    connection.on("makeMove", function (msg) {
+        console.log(msg);
+        if (clientColor != currStepChess) {
+            onChessClick(msg.yfrom, msg.xfrom, msg.newfigure);
+            onChessClick(msg.yto, msg.xto, msg.newfigure);
+        }
+    });
+
+
+    connection.on("gameStarted", function () {
+        if (clientColor == undefined)
+            clientColor = false;
+        paintChess();
+    });
+
+    connection.on("waitingForPlayers", function () {
+        clientColor = true;
+    });
+
+    connection.emit('readyToPlay');
 }
 function paintChess()
 {
@@ -618,8 +637,8 @@ function checkFieldFinish(color, row)
 //    changingFigure = null; 
 //    paintChess(); 
 //}
-function onChessClick(column, row) { //к шаху своему, к мату чужому
-    if (!GameOver || clientColor == currStepChess) {
+function onChessClick(column, row, newFigureType) { //к шаху своему, к мату чужому
+    if (!GameOver) {
         
         if (currentChessSelected != null) {
             if (currentChessSelected == ChessField[row][column]) {
@@ -628,7 +647,7 @@ function onChessClick(column, row) { //к шаху своему, к мату ч�
                 return;
             }
             if (currentChessSelected.TryMove(ChessField, row, column)) {
-                var castlingString = null, onGoChessBackup = null;
+                var castlingString = null, onGoChessBackup = null, backupX = currentChessSelected.X, backupY = currentChessSelected.Y, newFigure = undefined;
                 if (currentChessSelected.toString() == "King" && Math.abs(currentChessSelected.Y - column) == 2)
                     if (!checkCastlingCondition(currentChessSelected.color, column))
                         return;
@@ -697,7 +716,7 @@ function onChessClick(column, row) { //к шаху своему, к мату ч�
                     if (currentChessSelected.toString() == "Pawn" && checkFieldFinish(currentChessSelected.color, row))
                     {
                         changingFigure = currentChessSelected;
-
+                        
                         //var d = document.createElement('table');
                         //var getTdImgStr = function (figure, changingFigure)
 			            //{
@@ -719,96 +738,84 @@ function onChessClick(column, row) { //к шаху своему, к мату ч�
 			            //    width: $(d).width,
 			            //    modal: true
 			            //});
-
-                        $("#chooseDialogDiv").dialog(
+                        if (newFigureType != undefined)
+                            ChessChange(newFigureType, changingFigure);
+                        else
                         {
-                            dialogClass: "no-close",
-                            height: 140,
-                            modal: true,
-                            buttons: [ 
-                                {
-                                    text: "Rook",
-                                    'class': "RookButtonClass",
-                                    click: function () {
-                                    var nf = new Rook(changingFigure.color, changingFigure.X, changingFigure.Y);
-                                    switch (changingFigure.color) {
-                                        case "black":
-                                            BlackArray[BlackArray.indexOf(changingFigure)] = nf;
-                                        case "white":
-                                            WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
-                                    }
-                                    ChessField[nf.X][nf.Y] = nf;
-                                    changingFigure = null;
-                                    paintChess();
-                                    $(this).dialog("close");
-                                    }
-                                },
-                                { 
-                                    text: "Queen",
-                                    'class': "QueenButtonClass",
-                                    click: function () {
-                                        var nf = new Queen(changingFigure.color, changingFigure.X, changingFigure.Y);
-                                        switch (changingFigure.color) {
-                                            case "black":
-                                                BlackArray[BlackArray.indexOf(changingFigure)] = nf;
-                                            case "white":
-                                                WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+                            newFigure = "undefined";
+                            $("#chooseDialogDiv").dialog(
+                            {
+                                dialogClass: "no-close",
+                                height: 140,
+                                modal: true,
+                                buttons: [
+                                    {
+                                        text: "Rook",
+                                        'class': "RookButtonClass",
+                                        click: function () {
+                                            newFigure = "rook";
+                                            ChessChange(newFigure, changingFigure);
+                                            changingFigure = null;
+                                            paintChess();
+                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            $(this).dialog("close");
                                         }
-                                        ChessField[nf.X][nf.Y] = nf;
-                                        changingFigure = null;
-                                        paintChess();
-                                        $(this).dialog("close");
-                                    }
-                                },
-                                {
-                                    text: "Bishop",
-                                    'class': "BishopButtonClass",
-                                    click: function () {
-                                        var nf = new Bishop(changingFigure.color, changingFigure.X, changingFigure.Y);
-                                        switch (changingFigure.color) {
-                                            case "black":
-                                                BlackArray[BlackArray.indexOf(changingFigure)] = nf;
-                                            case "white":
-                                                WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+                                    },
+                                    {
+                                        text: "Queen",
+                                        'class': "QueenButtonClass",
+                                        click: function () {
+                                            newFigure = "queen";
+                                            ChessChange(newFigure, changingFigure);
+                                            changingFigure = null;
+                                            paintChess();
+                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            $(this).dialog("close");
                                         }
-                                        ChessField[nf.X][nf.Y] = nf;
-                                        changingFigure = null;
-                                        paintChess();
-                                        $(this).dialog("close");
-                                    }
-                                },
-                                {
-                                    text: "Knight",
-                                    'class': "KnightButtonClass",
-                                    click: function () {
-                                        var nf = new Knight(changingFigure.color, changingFigure.X, changingFigure.Y);
-                                        switch (changingFigure.color) {
-                                            case "black":
-                                                BlackArray[BlackArray.indexOf(changingFigure)] = nf;
-                                            case "white":
-                                                WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+                                    },
+                                    {
+                                        text: "Bishop",
+                                        'class': "BishopButtonClass",
+                                        click: function () {
+                                            newFigure = "bishop";
+                                            ChessChange(newFigure, changingFigure);
+                                            changingFigure = null;
+                                            paintChess();
+                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            $(this).dialog("close");
                                         }
-                                        ChessField[nf.X][nf.Y] = nf;
-                                        changingFigure = null;
-                                        paintChess();
-                                        $(this).dialog("close");
+                                    },
+                                    {
+                                        text: "Knight",
+                                        'class': "KnightButtonClass",
+                                        click: function () {
+                                            newFigure = "knight";
+                                            ChessChange(newFigure, changingFigure);
+                                            changingFigure = null;
+                                            paintChess();
+                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            $(this).dialog("close");
+                                        }
                                     }
-                                }
                                 ]
-                        });
+                            });
+                        }
                     }
 
                     if (castlingString != null)
                         console.log(castlingString);
                     if (currentChessSelected.color == "black") {
                         if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+                            connection.emit("gameOver");
                             alert("Мат белому королю");
                     }
                     else {
                         if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+                            connection.emit("gameOver");
                             alert("Мат черному королю");
                     }
-                    
+                    if (newFigure == undefined && clientColor == currStepChess)
+                        connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column });
                     currentChessSelected = null;
                     currStepChess = !currStepChess;
                 }
@@ -826,7 +833,7 @@ function onChessClick(column, row) { //к шаху своему, к мату ч�
                                 break;
                         }
                     }
-                connection.emit("makeMove", { xfrom: currentChessSelected.X, yfrom: currentChessSelected.Y, xto: column, yto: row });
+                
             }
 
         }
@@ -841,4 +848,53 @@ function onChessClick(column, row) { //к шаху своему, к мату ч�
         }
         paintChess();
     }
+}
+
+function ChessChange(type, changingFigure)
+{
+    switch (type)
+    {
+        case "rook":
+            var nf = new Rook(changingFigure.color, changingFigure.X, changingFigure.Y);
+            switch (changingFigure.color) {
+                case "black":
+                    BlackArray[BlackArray.indexOf(changingFigure)] = nf;
+                case "white":
+                    WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+            }
+            ChessField[nf.X][nf.Y] = nf;
+            break;
+        case "queen":
+            var nf = new Queen(changingFigure.color, changingFigure.X, changingFigure.Y);
+            switch (changingFigure.color) {
+                case "black":
+                    BlackArray[BlackArray.indexOf(changingFigure)] = nf;
+                case "white":
+                    WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+            }
+            ChessField[nf.X][nf.Y] = nf;
+            break;
+        case "bishop":
+            var nf = new Bishop(changingFigure.color, changingFigure.X, changingFigure.Y);
+            switch (changingFigure.color) {
+                case "black":
+                    BlackArray[BlackArray.indexOf(changingFigure)] = nf;
+                case "white":
+                    WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+            }
+            ChessField[nf.X][nf.Y] = nf;
+            break;
+        case "knight":
+            var nf = new Knight(changingFigure.color, changingFigure.X, changingFigure.Y);
+            switch (changingFigure.color) {
+                case "black":
+                    BlackArray[BlackArray.indexOf(changingFigure)] = nf;
+                case "white":
+                    WhiteArray[WhiteArray.indexOf(changingFigure)] = nf;
+            }
+            ChessField[nf.X][nf.Y] = nf;
+            break;
+
+    }
+   
 }
