@@ -74,7 +74,11 @@ io.sockets.on('connection', function (socket) {
 
 	    Log(socket.id + " In handler (call 1) " + roomClients.length);
 	    if (roomClients.length <= 1)
+		{
+			if (AlertRoom == socket.id)
+				AlertRoom = undefined;
 	        return;
+		}
 	    Log(socket.id + " In handler (call 2) " + roomClients.length);
 
 	    roomClients[0].lastClient = true;
