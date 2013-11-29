@@ -312,8 +312,8 @@ function Initialize(obj, size) {
     connection.on("makeMove", function (msg) {
         console.log(msg);
         if (clientColor != currStepChess) {
-            onChessClick(msg.yfrom, msg.xfrom, msg.newfigure);
-            onChessClick(msg.yto, msg.xto, msg.newfigure);
+            onChessClick(msg.xfrom, msg.yfrom, msg.newfigure);
+            onChessClick(msg.xto, msg.yto, msg.newfigure);
         }
     });
 
@@ -757,7 +757,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             ChessChange(newFigure, changingFigure);
                                             changingFigure = null;
                                             paintChess();
-                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
                                             $(this).dialog("close");
                                         }
                                     },
@@ -769,7 +769,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             ChessChange(newFigure, changingFigure);
                                             changingFigure = null;
                                             paintChess();
-                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
                                             $(this).dialog("close");
                                         }
                                     },
@@ -781,7 +781,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             ChessChange(newFigure, changingFigure);
                                             changingFigure = null;
                                             paintChess();
-                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
                                             $(this).dialog("close");
                                         }
                                     },
@@ -793,7 +793,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             ChessChange(newFigure, changingFigure);
                                             changingFigure = null;
                                             paintChess();
-                                            connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column, newfigure: newFigure });
+                                            connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
                                             $(this).dialog("close");
                                         }
                                     }
@@ -815,7 +815,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                             alert("Мат черному королю");
                     }
                     if (newFigure == undefined && clientColor == currStepChess)
-                        connection.emit("makeMove", { xfrom: backupX, yfrom: backupY, xto: row, yto: column });
+                        connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row });
                     currentChessSelected = null;
                     currStepChess = !currStepChess;
                 }

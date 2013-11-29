@@ -1,0 +1,9 @@
+OegN2168m6GbnWUu189W connected.
+
+Room #OegN2168m6GbnWUu189W has been created.
+OegN2168m6GbnWUu189W In handler (call 1) 1
+wuHJoRlXgBQyR6Ky189X connected.
+
+Room #OegN2168m6GbnWUu189W is full.
+gameStarted
+0 game started.
