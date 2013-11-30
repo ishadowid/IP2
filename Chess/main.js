@@ -625,18 +625,6 @@ function checkFieldFinish(color, row)
     return row == 7 || row == 0;
 }
 
-//function ReplaceFigure(changingFigureColor, indexOfchangingFigure, changingFigureType, changingFigureX, changingFigureY)
-//{
-//    switch (changingFigurecolor) {
-//        case "black":
-//            BlackArray[BlackArray.indexOf(changingFigure)] = changingFigure;
-//        case "white":
-//            WhiteArray[WhiteArray.indexOf(changingFigure)] = changingFigure;
-//    }
-//    ChessField[changingFigureX][changingFigureY] = changingFigure;//switch by type
-//    changingFigure = null; 
-//    paintChess(); 
-//}
 function onChessClick(column, row, newFigureType) { //к шаху своему, к мату чужому
     if (!GameOver) {
         
@@ -755,9 +743,21 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                         click: function () {
                                             newFigure = "rook";
                                             ChessChange(newFigure, changingFigure);
-                                            changingFigure = null;
-                                            paintChess();
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
+											if (changingFigure.color == "black") {
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат белому королю");
+											}
+											else {
+												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат черному королю");
+											}
+											changingFigure = null;
+                                            paintChess();
                                             $(this).dialog("close");
                                         }
                                     },
@@ -767,9 +767,21 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                         click: function () {
                                             newFigure = "queen";
                                             ChessChange(newFigure, changingFigure);
-                                            changingFigure = null;
-                                            paintChess();
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
+											if (changingFigure.color == "black") {
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат белому королю");
+											}
+											else {
+												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат черному королю");
+											}
+											changingFigure = null;
+                                            paintChess();
                                             $(this).dialog("close");
                                         }
                                     },
@@ -779,9 +791,21 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                         click: function () {
                                             newFigure = "bishop";
                                             ChessChange(newFigure, changingFigure);
-                                            changingFigure = null;
-                                            paintChess();
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
+											if (changingFigure.color == "black") {
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат белому королю");
+											}
+											else {
+												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат черному королю");
+											}
+											changingFigure = null;
+                                            paintChess();
                                             $(this).dialog("close");
                                         }
                                     },
@@ -791,9 +815,21 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                         click: function () {
                                             newFigure = "knight";
                                             ChessChange(newFigure, changingFigure);
-                                            changingFigure = null;
-                                            paintChess();
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
+											if (changingFigure.color == "black") {
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат белому королю");
+											}
+											else {
+												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+													//connection.emit("gameOver");
+													connection.disconnect();
+													alert("Мат черному королю");
+											}
+											changingFigure = null;
+                                            paintChess();
                                             $(this).dialog("close");
                                         }
                                     }
