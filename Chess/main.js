@@ -19,9 +19,8 @@ King.prototype.Move = function (table, newX, newY) {
         this.NotMoved = false;
     }
 }
-King.prototype.TryMove = function (table, newX, newY)
-{   // проверить условие что ниже описано
-    if ((Math.abs(this.Y - newY) == 2 && this.X == newX ) || Math.abs(this.X - newX) <= 1 && Math.abs(this.Y - newY) <= 1 && (table[newX][newY] == null || (table[newX][newY] != null && table[newX][newY].color != this.color)))
+King.prototype.TryMove = function (table, newX, newY) {   // проверить условие что ниже описано
+    if ((Math.abs(this.Y - newY) == 2 && this.X == newX) || Math.abs(this.X - newX) <= 1 && Math.abs(this.Y - newY) <= 1 && (table[newX][newY] == null || (table[newX][newY] != null && table[newX][newY].color != this.color)))
         return true;
     return false;
 }
@@ -45,40 +44,34 @@ Queen.prototype.Move = function (table, newX, newY) {
         this.Y = newY;
     }
 }
-Queen.prototype.TryMove = function (table, newX, newY)
-{
+Queen.prototype.TryMove = function (table, newX, newY) {
     if (table[newX][newY] != null && table[newX][newY].color == this.color)
         return false;
-    if (Math.abs(this.X - newX) > 0 && this.Y == newY)
-    {
-        for (var i = newX > this.X ? this.X + 1 : this.X - 1; i != newX; )
-        {
+    if (Math.abs(this.X - newX) > 0 && this.Y == newY) {
+        for (var i = newX > this.X ? this.X + 1 : this.X - 1; i != newX;) {
             if (table[i][this.Y] != null)
                 return false;
             i = newX > this.X ? i + 1 : i - 1;
         }
         return true;
     }
-    if (Math.abs(this.Y - newY) > 0 && this.X == newX) 
-    {
-        for (var i = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newY; )
-        {
+    if (Math.abs(this.Y - newY) > 0 && this.X == newX) {
+        for (var i = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newY;) {
             if (table[this.X][i] != null)
                 return false;
             i = newY > this.Y ? i + 1 : i - 1;
         }
         return true;
     }
-    if (Math.abs(this.Y - newY) == Math.abs(this.X - newX))
-    {
-        for (var i = newX > this.X ? this.X + 1 : this.X - 1, j = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newX; ) {
+    if (Math.abs(this.Y - newY) == Math.abs(this.X - newX)) {
+        for (var i = newX > this.X ? this.X + 1 : this.X - 1, j = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newX;) {
             if (table[i][j] != null)
                 return false;
             i = newX > this.X ? i + 1 : i - 1;
             j = newY > this.Y ? j + 1 : j - 1;
         }
         return true;
-    }    
+    }
     return false;
 }
 
@@ -103,12 +96,11 @@ Rook.prototype.Move = function (table, newX, newY) {
         this.NotMoved = false;
     }
 }
-Rook.prototype.TryMove = function (table, newX, newY)
-{
+Rook.prototype.TryMove = function (table, newX, newY) {
     if (table[newX][newY] != null && table[newX][newY].color == this.color)
         return false;
     if (Math.abs(this.X - newX) > 0 && this.Y == newY) {
-        for (var i = newX > this.X ? this.X + 1 : this.X - 1; i != newX; ) {
+        for (var i = newX > this.X ? this.X + 1 : this.X - 1; i != newX;) {
             if (table[i][this.Y] != null)
                 return false;
             i = newX > this.X ? i + 1 : i - 1;
@@ -116,7 +108,7 @@ Rook.prototype.TryMove = function (table, newX, newY)
         return true;
     }
     if (Math.abs(this.Y - newY) > 0 && this.X == newX) {
-        for (var i = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newY; ) {
+        for (var i = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newY;) {
             if (table[this.X][i] != null)
                 return false;
             i = newY > this.Y ? i + 1 : i - 1;
@@ -134,8 +126,7 @@ function Bishop(color, x, y) {
     this.Y = y != null || y != undefined ? y : 0;
     return this;
 }
-Bishop.prototype.toString = function()
-{
+Bishop.prototype.toString = function () {
     return "Bishop";
 }
 Bishop.prototype.Move = function (table, newX, newY) {
@@ -146,12 +137,11 @@ Bishop.prototype.Move = function (table, newX, newY) {
         this.Y = newY;
     }
 }
-Bishop.prototype.TryMove = function (table, newX, newY)
-{
+Bishop.prototype.TryMove = function (table, newX, newY) {
     if (table[newX][newY] != null && table[newX][newY].color == this.color)
         return false;
     if (Math.abs(this.Y - newY) == Math.abs(this.X - newX)) {
-        for (var i = newX > this.X ? this.X + 1 : this.X - 1, j = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newX; ) {
+        for (var i = newX > this.X ? this.X + 1 : this.X - 1, j = newY > this.Y ? this.Y + 1 : this.Y - 1; i != newX;) {
             if (table[i][j] != null)
                 return false;
             i = newX > this.X ? i + 1 : i - 1;
@@ -184,7 +174,7 @@ Knight.prototype.Move = function (table, newX, newY) {
 Knight.prototype.TryMove = function (table, newX, newY) {
     if (table[newX][newY] != null && table[newX][newY].color == this.color)
         return false;
-    if ((Math.abs(this.Y - newY) == 1 && Math.abs(this.X - newX) == 2) || (Math.abs(this.X - newX) == 1 && Math.abs(this.Y - newY) == 2)) 
+    if ((Math.abs(this.Y - newY) == 1 && Math.abs(this.X - newX) == 2) || (Math.abs(this.X - newX) == 1 && Math.abs(this.Y - newY) == 2))
         return true;
     return false;
 }
@@ -215,15 +205,16 @@ Pawn.prototype.TryMove = function (table, newX, newY) {
     switch (this.color) {
         case "black":
             if ((((newX - this.X == 1 && table[newX][this.Y] == null) || (newX == 3 && this.X == 1 && table[2][this.Y] == null)) && newY == this.Y)
-                || (newX - this.X == 1 && Math.abs(newY - this.Y) == 1 && (table[newX][newY] != null
+                || (newX - this.X == 1 && Math.abs(newY - this.Y) == 1 && ((table[newX][newY] != null && table[newX][newY].color != "black")
                 || (table[this.X][newY] != null && table[this.X][newY].toString() == "Pawn" && table[this.X][newY].firstMove == true))))
                 return true;
             break;
         case "white":
-            if ((((this.X - newX == 1 && table[newX][this.Y] == null) || (newX == 4 && this.X == 6 && table[5][this.Y] == null)) && newY == this.Y) || (this.X - newX == 1 && Math.abs(newY - this.Y) == 1 && (table[newX][newY] != null
+            if ((((this.X - newX == 1 && table[newX][this.Y] == null) || (newX == 4 && this.X == 6 && table[5][this.Y] == null)) && newY == this.Y) ||
+                (this.X - newX == 1 && Math.abs(newY - this.Y) == 1 && ((table[newX][newY] != null && table[newX][newY].color != "white")
                 || (table[this.X][newY] != null && table[this.X][newY].toString() == "Pawn" && table[this.X][newY].firstMove == true))))
                 return true;
-            break; 
+            break;
     }
     return false;
 }
@@ -242,8 +233,7 @@ var currentChessSelected,
     clientColor;
 
 //$(document).ready(Initialize(document.getElementById('tableDiv'), 8));
-function InitializeComponents(obj, size)
-{
+function InitializeComponents(obj, size) {
 
 }
 
@@ -264,7 +254,7 @@ function Initialize(obj, size) {
         obj.innerHTML = str;
     }
 
-    
+
     ChessField = [[], [], [], [], [], [], [], []];
     for (var i = 0; i < 8; i++)
         for (var j = 0; j < 8; j++)
@@ -282,7 +272,7 @@ function Initialize(obj, size) {
     BlackArray.push(new Rook("black", 0, 0));
     BlackArray.push(new Knight("black", 0, 1));
     BlackArray.push(new Bishop("black", 0, 2));
-    BlackArray.push(new Queen("black", 0, 3)); 
+    BlackArray.push(new Queen("black", 0, 3));
     BlackArray.push(new Bishop("black", 0, 5));
     BlackArray.push(new Knight("black", 0, 6));
     BlackArray.push(new Rook("black", 0, 7));
@@ -300,7 +290,7 @@ function Initialize(obj, size) {
         WhiteArray.push(new Pawn("white", 6, i));
     }
 
-          
+
 
     for (var i = 0; i < BlackArray.length; i++)
         ChessField[BlackArray[i].X][BlackArray[i].Y] = BlackArray[i];
@@ -330,19 +320,17 @@ function Initialize(obj, size) {
 
     connection.emit('readyToPlay');
 }
-function paintChess()
-{
-    if (ChessField != null)
-    {
+function paintChess() {
+    if (ChessField != null) {
         var maintable = document.getElementById("chessTable");
-        for (var i = 0; i < 8; i++) 
+        for (var i = 0; i < 8; i++)
             for (var j = 0; j < 8; j++) {
                 if (maintable.rows[i].cells[j].childNodes.length != 0)
                     $(maintable.rows[i].cells[j]).children().remove();
                 $(maintable.rows[i].cells[j]).css("background-color", "");
                 if (ChessField[i][j] != null) {
                     if (currentChessSelected != null && ChessField[i][j] == currentChessSelected)
-                        $(maintable.rows[i].cells[j]).css("background-color", "red"); 
+                        $(maintable.rows[i].cells[j]).css("background-color", "red");
                     var img = document.createElement('img');
                     img.src = ChessField[i][j].image;
                     img.style.height = "50px";
@@ -350,7 +338,7 @@ function paintChess()
                     //img.height = "auto";
                     //img.width = "60px";
                     maintable.rows[i].cells[j].appendChild(img);
-                }  
+                }
             }
     }
 }
@@ -369,8 +357,7 @@ function checkColor(cell) {
     return true;
 }
 
-function checkKingMoves(king)
-{
+function checkKingMoves(king) {
     var cX = king.X, cY = king.Y;
     if (king.X + 1 >= 0 && king.X + 1 < 8 && king.TryMove(ChessField, king.X + 1, king.Y) && (checkShah(king, king.X + 1, king.Y) == 0))
         return true;
@@ -391,8 +378,7 @@ function checkKingMoves(king)
     return false;
 }
 
-function checkShah(currChess, row, column)
-{
+function checkShah(currChess, row, column) {
     var lastX = currChess.X, lastY = currChess.Y, lastChessState = ChessField[row][column], isShah = 0;
     switch (currChess.color) {
         case "black":
@@ -405,7 +391,7 @@ function checkShah(currChess, row, column)
             currChess.Move(ChessField, row, column);
             BlackArray[cId] = currChess;
             for (var i = 0; i < WhiteArray.length; i++) {
-                if (WhiteArray[i].TryMove(ChessField, BlackArray[BlackKingIndex].X, BlackArray[BlackKingIndex].Y)) { 
+                if (WhiteArray[i].TryMove(ChessField, BlackArray[BlackKingIndex].X, BlackArray[BlackKingIndex].Y)) {
                     isShah++;
                 }
             }
@@ -427,7 +413,7 @@ function checkShah(currChess, row, column)
             for (var i = 0; i < BlackArray.length; i++) {
                 if (BlackArray[i].TryMove(ChessField, WhiteArray[WhiteKingIndex].X, WhiteArray[WhiteKingIndex].Y)) {
                     isShah++;
-                }  
+                }
             }
             if (lastChessState != null && lastChessState != currChess)
                 BlackArray.push(lastChessState);
@@ -439,20 +425,16 @@ function checkShah(currChess, row, column)
     return isShah;
 }
 
-function checkMat(king)
-{
-    switch (checkShah(king, king.X, king.Y))
-    {
+function checkMat(king) {
+    switch (checkShah(king, king.X, king.Y)) {
         case 0:
             return false;
         case 1:
             if (!checkKingMoves(king)) {
-                switch(king.color)
-                {
+                switch (king.color) {
                     case "white":
                         for (var arri = 0; arri < BlackArray.length; arri++)
-                            if (BlackArray[arri].TryMove(ChessField, king.X, king.Y))
-                            {
+                            if (BlackArray[arri].TryMove(ChessField, king.X, king.Y)) {
                                 if (Math.abs(BlackArray[arri].X - king.X) > 0 && BlackArray[arri].Y == king.Y) {
                                     if (Math.abs(BlackArray[arri].X - king.X) == 1)
                                         return true;
@@ -487,12 +469,15 @@ function checkMat(king)
                                     }
                                     return true;
                                 }
+                                for (var id = 0; id < WhiteArray.length; id++){
+                                    if (id != WhiteKingIndex && WhiteArray[id].TryMove(ChessField, BlackArray[arri].X, BlackArray[arri].Y))
+                                        return false;
+                                }
                             }
-                            break;
+                        break;
                     case "black":
                         for (var wi = 0; wi < WhiteArray.length; wi++)
-                            if (WhiteArray[wi].TryMove(ChessField, king.X, king.Y))
-                            {
+                            if (WhiteArray[wi].TryMove(ChessField, king.X, king.Y)) {
                                 if (Math.abs(WhiteArray[wi].X - king.X) > 0 && WhiteArray[wi].Y == king.Y) {
                                     if (Math.abs(WhiteArray[wi].X - king.X) == 1)
                                         return true;
@@ -527,8 +512,12 @@ function checkMat(king)
                                     }
                                     return true;
                                 }
+                                for (var id = 0; id < BlackArray.length; id++) {
+                                    if (id != BlackKingIndex && BlackArray[id].TryMove(ChessField, WhiteArray[wi].X, WhiteArray[wi].Y))
+                                        return false;
+                                }
                             }
-                            break;
+                        break;
                 }
                 return true;
             }
@@ -540,11 +529,9 @@ function checkMat(king)
     }
 }
 
-function checkCastlingCondition(color, column)
-{
+function checkCastlingCondition(color, column) {
     var wArr, wIndex;
-    switch (color)
-    {
+    switch (color) {
         case "black":
             wArr = BlackArray;
             wIndex = BlackKingIndex;
@@ -600,8 +587,7 @@ function doCastling(color, column) {
     }
     return color + ": from " + wArr[wIndex].X + ", 0 to " + wArr[wIndex].X + "," + wArr[wIndex].Y - 1;
 }
-function undoCastling(color, column)
-{
+function undoCastling(color, column) {
     var wArr, wIndex;
     switch (color) {
         case "black":
@@ -620,14 +606,13 @@ function undoCastling(color, column)
         ChessField[wArr[wIndex].X][wArr[wIndex].Y + 1].Move(wArr[wIndex].X, 7);
     }
 }
-function checkFieldFinish(color, row)
-{
+function checkFieldFinish(color, row) {
     return row == 7 || row == 0;
 }
 
 function onChessClick(column, row, newFigureType) { //к шаху своему, к мату чужому
     if (!GameOver) {
-        
+
         if (currentChessSelected != null) {
             if (currentChessSelected == ChessField[row][column]) {
                 currentChessSelected = null;
@@ -644,12 +629,10 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                 if (currentChessSelected.toString() == "Pawn") {
                     if (ChessField[currentChessSelected.X][column] != null && ChessField[currentChessSelected.X][column].color != currentChessSelected.color
                         && ChessField[currentChessSelected.X][column].firstMove == true)
-                        if (Math.abs(currentChessSelected.X - row) == 1 && Math.abs(currentChessSelected.Y - column) == 1)
-                        {
+                        if (Math.abs(currentChessSelected.X - row) == 1 && Math.abs(currentChessSelected.Y - column) == 1) {
                             onGoChessBackup = ChessField[currentChessSelected.X][column];
                             ChessField[currentChessSelected.X][column] = null;
-                            switch (onGoChessBackup.color)
-                            {
+                            switch (onGoChessBackup.color) {
                                 case "black":
                                     var ind = BlackArray.indexOf(onGoChessBackup);
                                     if (ind != -1) {
@@ -679,10 +662,8 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                         onGoChess = ChessField[currentChessSelected.X][currentChessSelected.Y];
                     }
                     console.log(currentChessSelected.color + ": from " + currentChessSelected.X + "," + currentChessSelected.Y + " to " + row + "," + column);
-                    if (ChessField[row][column] != null)
-                    {
-                        switch (ChessField[row][column].color)
-                        {
+                    if (ChessField[row][column] != null) {
+                        switch (ChessField[row][column].color) {
                             case "black":
                                 var idInArr = BlackArray.indexOf(ChessField[row][column]);
                                 if (idInArr != -1) {
@@ -700,36 +681,34 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                         }
                     }
                     currentChessSelected.Move(ChessField, row, column);
-                    
-                    if (currentChessSelected.toString() == "Pawn" && checkFieldFinish(currentChessSelected.color, row))
-                    {
+
+                    if (currentChessSelected.toString() == "Pawn" && checkFieldFinish(currentChessSelected.color, row)) {
                         changingFigure = currentChessSelected;
-                        
+
                         //var d = document.createElement('table');
                         //var getTdImgStr = function (figure, changingFigure)
-			            //{
+                        //{
                         //    var str = '<td><img src ="' + figure.image + '" onclick = "ReplaceFigure(); $(\'#menu\').dialog(\'close\');"></td>'; //$(this).dialog(\'destroy\').remove();
-				        //    return str;
-			            //}
+                        //    return str;
+                        //}
                         //$(d).addClass('menu')
-			            //.html('<tr>'
+                        //.html('<tr>'
                         //+ getTdImgStr(new Rook(changingFigure.color, changingFigure.X, changingFigure.Y))
                         //+ getTdImgStr(new Queen(changingFigure.color, changingFigure.X, changingFigure.Y))
                         //+ getTdImgStr(new Bishop(changingFigure.color, changingFigure.X, changingFigure.Y))
                         //+ getTdImgStr(new Knight(changingFigure.color, changingFigure.X, changingFigure.Y))
                         //+ '</tr>');
 
-			            //$(d).dialog({
-			            //    dialogClass: "no-close",
-			            //    resizable: false,
-			            //    height: 140,
-			            //    width: $(d).width,
-			            //    modal: true
-			            //});
+                        //$(d).dialog({
+                        //    dialogClass: "no-close",
+                        //    resizable: false,
+                        //    height: 140,
+                        //    width: $(d).width,
+                        //    modal: true
+                        //});
                         if (newFigureType != undefined)
                             ChessChange(newFigureType, changingFigure);
-                        else
-                        {
+                        else {
                             newFigure = "undefined";
                             $("#chooseDialogDiv").dialog(
                             {
@@ -744,19 +723,19 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "rook";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") 
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат белому королю");
-											}
-											else 
-												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат черному королю");
-											}
-											changingFigure = null;
+                                            if (changingFigure.color == "black")
+                                                if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
+                                                    //connection.emit("gameOver");
+                                                    connection.disconnect();
+                                                    alert("Мат белому королю");
+                                                }
+                                                else
+                                                    if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
+                                                        //connection.emit("gameOver");
+                                                        connection.disconnect();
+                                                        alert("Мат черному королю");
+                                                    }
+                                            changingFigure = null;
                                             paintChess();
                                             $(this).dialog("close");
                                         }
@@ -768,19 +747,19 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "queen";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") 
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат белому королю");
-											}
-											else 
-												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат черному королю");
-											}
-											changingFigure = null;
+                                            if (changingFigure.color == "black")
+                                                if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
+                                                    //connection.emit("gameOver");
+                                                    connection.disconnect();
+                                                    alert("Мат белому королю");
+                                                }
+                                                else
+                                                    if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
+                                                        //connection.emit("gameOver");
+                                                        connection.disconnect();
+                                                        alert("Мат черному королю");
+                                                    }
+                                            changingFigure = null;
                                             paintChess();
                                             $(this).dialog("close");
                                         }
@@ -792,19 +771,19 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "bishop";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") 
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат белому королю");
-											}
-											else 
-												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат черному королю");
-											}
-											changingFigure = null;
+                                            if (changingFigure.color == "black")
+                                                if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
+                                                    //connection.emit("gameOver");
+                                                    connection.disconnect();
+                                                    alert("Мат белому королю");
+                                                }
+                                                else
+                                                    if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
+                                                        //connection.emit("gameOver");
+                                                        connection.disconnect();
+                                                        alert("Мат черному королю");
+                                                    }
+                                            changingFigure = null;
                                             paintChess();
                                             $(this).dialog("close");
                                         }
@@ -816,19 +795,19 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "knight";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") 
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат белому королю");
-											}
-											else 
-												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
-													//connection.emit("gameOver");
-													connection.disconnect();
-													alert("Мат черному королю");
-											}
-											changingFigure = null;
+                                            if (changingFigure.color == "black")
+                                                if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
+                                                    //connection.emit("gameOver");
+                                                    connection.disconnect();
+                                                    alert("Мат белому королю");
+                                                }
+                                                else
+                                                    if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
+                                                        //connection.emit("gameOver");
+                                                        connection.disconnect();
+                                                        alert("Мат черному королю");
+                                                    }
+                                            changingFigure = null;
                                             paintChess();
                                             $(this).dialog("close");
                                         }
@@ -840,24 +819,24 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
 
                     if (castlingString != null)
                         console.log(castlingString);
-                    if (currentChessSelected.color == "black") 
-                        if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
-                            //connection.emit("gameOver");
-							connection.disconnect();
-                            alert("Мат белому королю");
-                    }
-                    else 
-                        if (GameOver = checkMat(BlackArray[BlackKingIndex])){
-                            //connection.emit("gameOver");
-							connection.disconnect();
-                            alert("Мат черному королю");
-                    }
                     if (newFigure == undefined && clientColor == currStepChess)
                         connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row });
+                    if (currentChessSelected.color == "black")
+                        if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
+                            //connection.emit("gameOver");
+                            connection.disconnect();
+                            alert("Мат белому королю");
+                        }
+                        else
+                            if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
+                                //connection.emit("gameOver");
+                                connection.disconnect();
+                                alert("Мат черному королю");
+                            }
                     currentChessSelected = null;
                     currStepChess = !currStepChess;
                 }
-                else  if (currentChessSelected.toString() == "King")
+                else if (currentChessSelected.toString() == "King")
                     undoCastling(currentChessSelected.color, column)
                 else
                     if (currentChessSelected.toString() == "Pawn" && onGoChessBackup != null) {
@@ -871,7 +850,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                 break;
                         }
                     }
-                
+
             }
 
         }
@@ -888,10 +867,8 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
     }
 }
 
-function ChessChange(type, changingFigure)
-{
-    switch (type)
-    {
+function ChessChange(type, changingFigure) {
+    switch (type) {
         case "rook":
             var nf = new Rook(changingFigure.color, changingFigure.X, changingFigure.Y);
             switch (changingFigure.color) {
@@ -934,5 +911,5 @@ function ChessChange(type, changingFigure)
             break;
 
     }
-   
+
 }
