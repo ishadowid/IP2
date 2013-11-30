@@ -20,3 +20,6 @@ gameStarted
 Make move called on socket 0TYmYzUoPo4doKc-GeHb
 Make move valid on socket 0TYmYzUoPo4doKc-GeHb
 0TYmYzUoPo4doKc-GeHb maked move from 6 6 to 6 4
+Nk2hNaCH4lh-9dpEGeHc In handler (call 1) 2
+Nk2hNaCH4lh-9dpEGeHc In handler (call 2) 2
+Disconnected finished Nk2hNaCH4lh-9dpEGeHc

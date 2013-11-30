@@ -841,7 +841,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                     if (castlingString != null)
                         console.log(castlingString);
                     if (currentChessSelected.color == "black") 
-                        if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+                        if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
                             //connection.emit("gameOver");
 							connection.disconnect();
                             alert("Мат белому королю");
