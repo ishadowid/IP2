@@ -23,3 +23,7 @@ Make move valid on socket 0TYmYzUoPo4doKc-GeHb
 Nk2hNaCH4lh-9dpEGeHc In handler (call 1) 2
 Nk2hNaCH4lh-9dpEGeHc In handler (call 2) 2
 Disconnected finished Nk2hNaCH4lh-9dpEGeHc
+rKC_l6O4jlvwn70MIwoD connected.
+
+Room #rKC_l6O4jlvwn70MIwoD has been created.
+rKC_l6O4jlvwn70MIwoD In handler (call 1) 1

@@ -308,7 +308,7 @@ function Initialize(obj, size) {
     for (var i = 0; i < WhiteArray.length; i++)
         ChessField[WhiteArray[i].X][WhiteArray[i].Y] = WhiteArray[i];
 
-    connection = io.connect("http://localhost:81");
+    connection = io.connect("http://10.10.2.1:81");
     connection.on("makeMove", function (msg) {
         console.log(msg);
         if (clientColor != currStepChess) {
@@ -454,7 +454,7 @@ function checkMat(king)
                             if (BlackArray[arri].TryMove(ChessField, king.X, king.Y))
                             {
                                 if (Math.abs(BlackArray[arri].X - king.X) > 0 && BlackArray[arri].Y == king.Y) {
-                                    if (Math.abs(BlackArray[wi].X - king.X) == 1)
+                                    if (Math.abs(BlackArray[arri].X - king.X) == 1)
                                         return true;
                                     for (var i = king.X > BlackArray[arri].X ? BlackArray[arri].X + 1 : BlackArray[arri].X - 1; i != king.X;) {
                                         for (var id = 0; id < WhiteArray.length; id++)
@@ -465,7 +465,7 @@ function checkMat(king)
                                     return true;
                                 }
                                 if (Math.abs(BlackArray[arri].Y - king.Y) > 0 && BlackArray[arri].X == king.X) {
-                                    if (Math.abs(BlackArray[wi].Y - king.Y) == 1 )
+                                    if (Math.abs(BlackArray[arri].Y - king.Y) == 1)
                                         return true;
                                     for (var i = king.Y > BlackArray[arri].Y ? BlackArray[arri].Y + 1 : BlackArray[arri].Y - 1; i != king.Y;) {
                                         for (var id = 0; id < WhiteArray.length; id++)
@@ -476,7 +476,7 @@ function checkMat(king)
                                     return true;
                                 }
                                 if (Math.abs(BlackArray[arri].Y - king.Y) == Math.abs(BlackArray[arri].X - king.X)) {
-                                    if (Math.abs(BlackArray[wi].Y - king.Y) == 1 && Math.abs(BlackArray[wi].X - king.X) == 1)
+                                    if (Math.abs(BlackArray[arri].Y - king.Y) == 1 && Math.abs(BlackArray[arri].X - king.X) == 1)
                                         return true;
                                     for (var i = king.X > BlackArray[arri].X ? BlackArray[arri].X + 1 : BlackArray[arri].X - 1, j = king.Y > BlackArray[arri].Y ? BlackArray[arri].Y + 1 : BlackArray[arri].Y - 1; i != king.X;) {
                                         for (var id = 0; id < WhiteArray.length; id++)
