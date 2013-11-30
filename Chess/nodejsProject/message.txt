@@ -7,3 +7,16 @@ wuHJoRlXgBQyR6Ky189X connected.
 Room #OegN2168m6GbnWUu189W is full.
 gameStarted
 0 game started.
+0TYmYzUoPo4doKc-GeHb connected.
+
+Room #0TYmYzUoPo4doKc-GeHb has been created.
+Nk2hNaCH4lh-9dpEGeHc connected.
+
+Room #0TYmYzUoPo4doKc-GeHb is full.
+gameStarted
+0 game started.
+gameStarted
+1 game started.
+Make move called on socket 0TYmYzUoPo4doKc-GeHb
+Make move valid on socket 0TYmYzUoPo4doKc-GeHb
+0TYmYzUoPo4doKc-GeHb maked move from 6 6 to 6 4

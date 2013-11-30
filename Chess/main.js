@@ -744,14 +744,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "rook";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") {
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+											if (changingFigure.color == "black") 
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат белому королю");
 											}
-											else {
-												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+											else 
+												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат черному королю");
@@ -768,14 +768,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "queen";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") {
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+											if (changingFigure.color == "black") 
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат белому королю");
 											}
-											else {
-												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+											else 
+												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат черному королю");
@@ -792,14 +792,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "bishop";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") {
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+											if (changingFigure.color == "black") 
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат белому королю");
 											}
-											else {
-												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+											else 
+												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат черному королю");
@@ -816,14 +816,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                                             newFigure = "knight";
                                             ChessChange(newFigure, changingFigure);
                                             connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row, newfigure: newFigure });
-											if (changingFigure.color == "black") {
-												if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
+											if (changingFigure.color == "black") 
+												if (GameOver = checkMat(WhiteArray[WhiteKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат белому королю");
 											}
-											else {
-												if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+											else 
+												if (GameOver = checkMat(BlackArray[BlackKingIndex])){
 													//connection.emit("gameOver");
 													connection.disconnect();
 													alert("Мат черному королю");
@@ -840,14 +840,14 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
 
                     if (castlingString != null)
                         console.log(castlingString);
-                    if (currentChessSelected.color == "black") {
+                    if (currentChessSelected.color == "black") 
                         if (GameOver = checkMat(WhiteArray[WhiteKingIndex]))
                             //connection.emit("gameOver");
 							connection.disconnect();
                             alert("Мат белому королю");
                     }
-                    else {
-                        if (GameOver = checkMat(BlackArray[BlackKingIndex]))
+                    else 
+                        if (GameOver = checkMat(BlackArray[BlackKingIndex])){
                             //connection.emit("gameOver");
 							connection.disconnect();
                             alert("Мат черному королю");
