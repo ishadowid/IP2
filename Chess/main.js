@@ -16,7 +16,6 @@ King.prototype.Move = function (table, newX, newY) {
         table[this.X][this.Y] = null;
         this.X = newX;
         this.Y = newY;
-        this.NotMoved = false;
     }
 }
 King.prototype.TryMove = function (table, newX, newY) {   // проверить условие что ниже описано
@@ -93,7 +92,6 @@ Rook.prototype.Move = function (table, newX, newY) {
         table[this.X][this.Y] = null;
         this.X = newX;
         this.Y = newY;
-        this.NotMoved = false;
     }
 }
 Rook.prototype.TryMove = function (table, newX, newY) {
@@ -230,30 +228,13 @@ var currentChessSelected,
     onGoChess,
     changingFigure,
     connection,
-    clientColor;
+    clientColor,
+    GameStarted;
 
 //$(document).ready(Initialize(document.getElementById('tableDiv'), 8));
-function InitializeComponents(obj, size) {
-
-}
-
-function Initialize(obj, size) {
-    currentChessSelected = chessSelectedBackgroundColor = null, currStepChess = true, blockChess = GameOver = false, changingFigure = null;
-    if (size != "") {
-        var str = "<table class=\"tableClass\" id=\"chessTable\">";
-        for (var i = 0; i < size; i++) {
-            str += "<tr>";
-            for (var j = 0; j < size; j++) {
-                str += "<td onclick = \" if (clientColor == currStepChess) onChessClick(" + j + ", " + i + ");\" class=\"";
-                str += (i + j) % 2 == 0 ? 'tableWhiteCell\">' : ('tableBlackCell\"> ');
-                str += "</td>";
-            }
-            str += "</tr>";
-        }
-        str += '</table>';
-        obj.innerHTML = str;
-    }
-
+function InitializeFigures()
+{
+    currentChessSelected = chessSelectedBackgroundColor = null, currStepChess = true, blockChess = GameOver = false, changingFigure = null, clientColor = undefined, GameStarted = false;
 
     ChessField = [[], [], [], [], [], [], [], []];
     for (var i = 0; i < 8; i++)
@@ -290,15 +271,27 @@ function Initialize(obj, size) {
         WhiteArray.push(new Pawn("white", 6, i));
     }
 
-
-
     for (var i = 0; i < BlackArray.length; i++)
         ChessField[BlackArray[i].X][BlackArray[i].Y] = BlackArray[i];
 
     for (var i = 0; i < WhiteArray.length; i++)
         ChessField[WhiteArray[i].X][WhiteArray[i].Y] = WhiteArray[i];
+}
 
-    connection = io.connect("http://10.10.2.1:81");
+function createConnection()
+{
+    connection = io.connect("http://localhost:81");
+
+    connection.on('connected', function (data) {
+        if (clientColor != undefined) {
+            console.log("Warning. connected-message when already connected");
+            Restart();
+            return;
+        }
+        console.log("Connected.");
+        connection.emit('readyToPlay');
+    });
+
     connection.on("makeMove", function (msg) {
         console.log(msg);
         if (clientColor != currStepChess) {
@@ -307,26 +300,62 @@ function Initialize(obj, size) {
         }
     });
 
-
     connection.on("gameStarted", function () {
         if (clientColor == undefined)
             clientColor = false;
         paintChess();
+        GameStarted = true;
     });
 
     connection.on("waitingForPlayers", function () {
         clientColor = true;
     });
 
-    connection.emit('readyToPlay');
+    connection.on("disconnect", function () {
+        alert("Connection has been lost.");
+        connection.disconnect();
+        Restart();
+    });
+}
+
+function Restart()
+{
+    ChessField = null;
+    paintChess();
+    if (!GameOver && GameStarted) {
+        InitializeFigures();
+        connection.socket.connect();
+    }
+}
+
+function Initialize(obj, size) {
+    if (size != "") {
+        var str = "<table class=\"tableClass\" id=\"chessTable\">";
+        for (var i = 0; i < size; i++) {
+            str += "<tr>";
+            for (var j = 0; j < size; j++) {
+                str += "<td onclick = \" if (clientColor != undefined && clientColor == currStepChess) onChessClick(" + j + ", " + i + ");\" class=\"";
+                str += (i + j) % 2 == 0 ? 'tableWhiteCell\">' : ('tableBlackCell\"> ');
+                str += "</td>";
+            }
+            str += "</tr>";
+        }
+        str += '</table>';
+        obj.innerHTML = str;
+    }
+
+    InitializeFigures();
+    createConnection();
 }
 function paintChess() {
+    var maintable = document.getElementById("chessTable");
+    for (var i = 0; i < 8; i++)
+        for (var j = 0; j < 8; j++)
+            if (maintable.rows[i].cells[j].childNodes.length != 0)
+                $(maintable.rows[i].cells[j]).children().remove();
     if (ChessField != null) {
-        var maintable = document.getElementById("chessTable");
         for (var i = 0; i < 8; i++)
             for (var j = 0; j < 8; j++) {
-                if (maintable.rows[i].cells[j].childNodes.length != 0)
-                    $(maintable.rows[i].cells[j]).children().remove();
                 $(maintable.rows[i].cells[j]).css("background-color", "");
                 if (ChessField[i][j] != null) {
                     if (currentChessSelected != null && ChessField[i][j] == currentChessSelected)
@@ -567,6 +596,7 @@ function checkCastlingCondition(color, column) {
     }
     return false;
 }
+
 function doCastling(color, column) {
     var wArr, wIndex;
     switch (color) {
@@ -587,6 +617,7 @@ function doCastling(color, column) {
     }
     return color + ": from " + wArr[wIndex].X + ", 0 to " + wArr[wIndex].X + "," + wArr[wIndex].Y - 1;
 }
+
 function undoCastling(color, column) {
     var wArr, wIndex;
     switch (color) {
@@ -606,12 +637,17 @@ function undoCastling(color, column) {
         ChessField[wArr[wIndex].X][wArr[wIndex].Y + 1].Move(wArr[wIndex].X, 7);
     }
 }
+
 function checkFieldFinish(color, row) {
     return row == 7 || row == 0;
 }
 
 function onChessClick(column, row, newFigureType) { //к шаху своему, к мату чужому
-    if (!GameOver) {
+    if (GameOver) {
+        alert("Игра окончена. Для начала новой игры перезагрузите страницу.")
+        return;
+    }
+    if (GameStarted) {
 
         if (currentChessSelected != null) {
             if (currentChessSelected == ChessField[row][column]) {
@@ -823,16 +859,15 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
                         connection.emit("makeMove", { xfrom: backupY, yfrom: backupX, xto: column, yto: row });
                     if (currentChessSelected.color == "black")
                         if (GameOver = checkMat(WhiteArray[WhiteKingIndex])) {
-                            //connection.emit("gameOver");
-                            connection.disconnect();
                             alert("Мат белому королю");
+                            //connection.disconnect();
                         }
                         else
                             if (GameOver = checkMat(BlackArray[BlackKingIndex])) {
-                                //connection.emit("gameOver");
-                                connection.disconnect();
                                 alert("Мат черному королю");
+                                //connection.disconnect();
                             }
+                    if (currentChessSelected.NotMoved == false) currentChessSelected.NotMoved = true;
                     currentChessSelected = null;
                     currStepChess = !currStepChess;
                 }
@@ -864,7 +899,7 @@ function onChessClick(column, row, newFigureType) { //к шаху своему, 
             }
         }
         paintChess();
-    }
+    }       
 }
 
 function ChessChange(type, changingFigure) {

@@ -1,0 +1,626 @@
+<html>
+	<head>
+	<style>
+	.chess_board
+	{
+		border-collapse: collapse;
+		border-spacing: 0;
+		border : solid
+	}
+	.chess_board tr
+	{
+		height : 100px;
+	}
+	.chess_board td
+	{
+		width : 100px;
+	}
+	.black_cell
+	{
+		background-color : #8B2500;
+	}
+	.white_cell
+	{
+		background-color : #FFFACD;
+	}
+	.figure
+	{
+		height : 100px;
+		width : 100px;
+	}
+	.menu td
+	{
+		background-color : #8B2500;
+		border : 1px solid black;
+	}
+	.no-close .ui-dialog-titlebar-close
+	{
+		display: none;
+	}
+	</style>
+	</head>
+	<body>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" ></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="http://localhost:81/socket.io/socket.io.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	</body>
+		<script>
+		const size = 8;
+		var fgrChecked;
+		var board;
+		var arrayBlack;
+		var arrayWhite;
+		var blackKing;
+		var whiteKing;
+		var Mate;
+		
+		var serverUrl = 'http://localhost:81';
+		var gameStatus = "connecting";
+		var thisColor;
+		var socket = io.connect(serverUrl);
+		
+		socket.on('connected', function(data) {
+			if (gameStatus != "connecting")
+			{
+				console.log("Warning. connected-message when status: " + gameStatus);
+				Restart();
+				return;
+			}
+			console.log("Connected.");
+			socket.emit('readyToPlay');
+			gameStatus = "readyToPlay";
+		});
+		socket.on('waitingForPlayers', function(data) {
+			if (gameStatus != "readyToPlay")
+			{
+				console.log("Warning. WaitingForPlayers-message when status: " + gameStatus);
+				Restart();
+				return;
+			}
+			thisColor = 'white';
+			gameStatus = "waitingForPlayers";
+			console.log("Waiting for players.");
+		});
+		socket.on('gameStarted', function(data) {
+			if (gameStatus != "readyToPlay" && gameStatus != "waitingForPlayers")
+			{
+				console.log("Warning. gameStarted-message when status: " + gameStatus);
+				Restart();
+				return;
+			}
+			Initialize_Board();
+			console.log("Game started");
+			if (!thisColor)
+			{
+				thisColor = 'black';
+				gameStatus = "WaitingForOpponent";
+				return;
+			}
+			gameStatus = "moveMaking";
+		});
+		socket.on('makeMove', function(data) {
+			if (gameStatus != "WaitingForOpponent")
+			{
+				console.log("Warning. makeMove-message when status: " + gameStatus);
+				Restart();
+				return;
+			}
+			if (data.xfrom == undefined && data.yfrom == undefined && data.xto == undefined && data.yto == undefined)
+		    {
+				console.log("Warning. makeMove-message with incorrect data.");
+				Restart();
+				return;
+			}
+			newType = data.newfigure
+			gameStatus = "moveReceived";
+			
+			console.log("Move received");
+			if (HandleInput(data.xfrom, data.yfrom) && HandleInput(data.xto, data.yto))
+			{
+				DrawFigures();
+				gameStatus = "moveMaking";
+				console.log("Received move is correct");
+				return;
+			}
+			console.log("Received move is incorrect.");
+			Restart();
+		});
+		socket.on('disconnect', function(data) {
+			if (IsReconnect)
+			{
+				IsReconnect = false;
+				return;
+			}
+			alert("Connection has been lost.");
+			Restart(true);
+		});
+		
+		var IsReconnect = false;
+		function Restart(JustReconnect)
+		{
+			IsReconnect = true;
+			socket.disconnect();
+			gameStatus = "connecting";
+			if (!JustReconnect)
+				alert("Game is over, because wrong data have been received.");
+			socket.socket.connect();
+		}
+		
+		function Initialize_Board()
+		{
+			fgrChecked = undefined;
+			board = new Array(size); //y x
+			for (var i = 0; i < size; i++)
+				board[i] = new Array(size);
+			arrayBlack = [];
+			arrayWhite = [];
+			
+			DrawBoard();
+			
+			CreateAndSetFigure(0, 0, "black", "rook");
+			CreateAndSetFigure(0, 1, "black", "knight");
+			CreateAndSetFigure(0, 2, "black", "bishop");
+			CreateAndSetFigure(0, 3, "black", "queen");
+			CreateAndSetFigure(0, 4, "black", "king");
+			CreateAndSetFigure(0, 5, "black", "bishop");
+			CreateAndSetFigure(0, 6, "black", "knight");
+			CreateAndSetFigure(0, 7, "black", "rook");
+			
+			CreateAndSetFigure(7, 0, "white", "rook");
+			CreateAndSetFigure(7, 1, "white", "knight");
+			CreateAndSetFigure(7, 2, "white", "bishop");
+			CreateAndSetFigure(7, 3, "white", "queen");
+			CreateAndSetFigure(7, 4, "white", "king");
+			CreateAndSetFigure(7, 5, "white", "bishop");
+			CreateAndSetFigure(7, 6, "white", "knight");
+			CreateAndSetFigure(7, 7, "white", "rook");
+			
+			for (var i = 0; i < size; i++)
+			{
+				CreateAndSetFigure(1, i, "black", "pawn");
+				CreateAndSetFigure(6, i, "white", "pawn");
+			}
+			
+			DrawFigures();
+		}
+		
+		//$(document).ready();
+
+		function Figure(y, x, color, type)
+		{
+			this._color = color;
+			this._type = type;
+			this._x = x;
+			this._y = y;
+		}
+		
+		Figure.prototype.DefineAvailableMoves = function(force, noCastling)
+		{
+			if (this._availableMoves && !force && this._type != "king" && this._type != "pawn")
+				return;
+			
+			this._availableMoves = [];
+			var GetCell = function(y, x, theColor, availableMoves)
+					{
+						var fgr = board[y][x];
+						if (fgr != undefined)
+						{
+							if (fgr._color != theColor)
+								availableMoves.push({y: y, x: x});
+							return false
+						}
+						availableMoves.push({y: y, x: x});
+						return true;
+					}
+			var ValidateCoordinates = function(y, x, theColor, availableMoves)
+					{
+						if (x < 0 || x >= size || y < 0 || y >= size)
+							return;
+						GetCell(y, x, theColor, availableMoves);
+					}
+			switch(this._type)
+			{
+				case "pawn":
+					var direction = (this._color == "black" ? 1 : -1);
+					var nextRow = this._y + direction;
+					if (nextRow >= size || nextRow < 0)
+						return;
+					if (!board[this._y + direction][this._x])
+					{
+						this._availableMoves.push({y: nextRow, x: this._x, notMelee: true}); // one row forward
+						if (this._firstStep && !board[nextRow + direction][this._x])
+							this._availableMoves.push({y: nextRow + direction, x: this._x, notMelee: true}); //double first step
+					}
+					if (this._x < size - 1 && board[nextRow][this._x + 1] && board[nextRow][this._x + 1]._color != this._color)
+						this._availableMoves.push({y: nextRow, x: this._x + 1}); //side kill
+					if (this._x > 0 && board[nextRow][this._x - 1] && board[nextRow][this._x - 1]._color != this._color)
+						this._availableMoves.push({y: nextRow, x: this._x - 1}); //side kill
+					if (EnPassant && EnPassant._y == this._y && Math.abs(this._x - EnPassant._x) == 1)
+						this._availableMoves.push({y: nextRow, x: EnPassant._x, notMelee: true});
+					return;
+				case "knight":
+					ValidateCoordinates(this._y + 2, this._x + 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 1, this._x + 2, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 1, this._x + 2, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 2, this._x + 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 2, this._x - 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 1, this._x - 2, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 1, this._x - 2, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 2, this._x - 1, this._color, this._availableMoves);
+					return;
+				case "king":
+					ValidateCoordinates(this._y, this._x + 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y, this._x - 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 1, this._x, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 1, this._x, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 1, this._x - 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 1, this._x + 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y + 1, this._x + 1, this._color, this._availableMoves);
+					ValidateCoordinates(this._y - 1, this._x - 1, this._color, this._availableMoves);
+					if (!noCastling && this._firstStep && board[this._y][0]._firstStep)
+					{
+						var enemies = this._color == "black" ? arrayWhite : arrayBlack;
+						var ok = true;
+						for (var x = 0; x <= this._x; x++)
+							if ((board[this._y][x] && x != this._x && x != 0)|| IsCheckTo(this._y, x, enemies))
+							{
+								ok = false;
+								break;
+							}
+						if (ok)
+							this._availableMoves.push({y: this._y, x: this._x - 2});
+						ok = true;
+						for (var x = this._x; x < size; x++)
+							if ((board[this._y][x] && x != this._x && x != size - 1) || IsCheckTo(this._y, x, enemies))
+							{
+								ok = false;
+								break;
+							}
+						if (ok)
+							this._availableMoves.push({y: this._y, x: this._x + 2, notMelee: true});
+					}
+					return;
+				case "queen":
+				case "rook":
+					for (var x = this._x + 1; x < size && GetCell(this._y, x, this._color, this._availableMoves); x++);	
+					for (var x = this._x - 1; x >= 0 && GetCell(this._y, x, this._color, this._availableMoves); x--);
+					for (var y = this._y + 1; y < size && GetCell(y, this._x, this._color, this._availableMoves); y++);
+					for (var y = this._y - 1; y >= 0 && GetCell(y, this._x, this._color, this._availableMoves); y--);
+					if (this._type != "queen")
+						return;
+				case "bishop":
+					for (var x = this._x + 1, y = this._y + 1; x < size && y < size && GetCell(y, x, this._color, this._availableMoves); x++, y++);
+					for (var x = this._x - 1, y = this._y + 1; x >= 0 && y < size && GetCell(y, x, this._color, this._availableMoves); x--, y++);
+					for (var x = this._x + 1, y = this._y - 1; x < size && y >= 0 && GetCell(y, x, this._color, this._availableMoves); x++, y--);
+					for (var x = this._x - 1, y = this._y - 1; x >= 0 && y >= 0 && GetCell(y, x, this._color, this._availableMoves); x--, y--);
+					return;
+			}
+		}
+		var EnPassant;
+		Figure.prototype.TryMove = function(y_, x_, board)
+		{
+			var len = this._availableMoves.length;
+			var inArr = false;
+			for (var i = 0; i < len; i++)
+				if (this._availableMoves[i].x == x_ && this._availableMoves[i].y == y_)
+				{
+					inArr = true;
+					break;
+				}
+			var prevX = this._x;
+			var prevY = this._y;
+			if (!inArr || !SetFigure(this, y_, x_, false))
+				return false;
+			if (this._type == "pawn" && Math.abs(prevY - y_) == 2)
+				EnPassant = this;
+			else 
+				EnPassant = undefined;
+			if (this._firstStep)
+				this._firstStep = false;
+			return true;
+		}
+		
+		function SetFigure(fgr, y, x, test)
+		{
+			var enemies;
+			var figures;
+			var king;
+			var alienKing;
+			if (fgr._color == "black")
+			{
+				enemies = arrayWhite;
+				figures = arrayBlack;
+				king = blackKing;
+				alienKing = whiteKing;
+			}
+			else
+			{
+				enemies = arrayBlack;
+				figures = arrayWhite;
+				king = whiteKing;
+				alienKing = blackKing;
+			}
+			if (!test && fgr._type == "king" && Math.abs(fgr._x - x) == 2)
+			{
+				var rookX;
+				var newRookX;
+				if (fgr._x > x)
+				{
+					rookX = 0;
+					newRookX = fgr._x - 1;
+				}
+				else
+				{
+					rookX = size - 1;
+					newRookX = fgr._x + 1;
+				}
+				board[y][x] = fgr;
+				board[y][fgr._x] = undefined;
+				var rook = board[y][rookX];
+				board[y][newRookX] = rook;
+				board[y][rookX] = undefined;
+				fgr._x = x;					
+				rook._x = newRookX;
+			}
+			else
+			{
+				var removingFgr;
+				if (EnPassant && fgr._type == "pawn" && Math.abs(x - fgr._x) == 1 && board[y][x] == undefined)
+				{
+					removingFgr = EnPassant;
+					board[removingFgr._y][removingFgr._x] = undefined;
+				}
+				else
+					removingFgr = board[y][x];
+				if (removingFgr)
+					enemies.splice($.inArray(removingFgr, enemies), 1);
+				board[y][x] = fgr;
+				board[fgr._y][fgr._x] = undefined;
+				var prevX = fgr._x;
+				var prevY = fgr._y;				
+				fgr._x = x;
+				fgr._y = y;
+				var checkTo = IsCheckTo(king._y, king._x, enemies);
+				if (checkTo || test)
+				{
+					fgr._x = prevX;
+					fgr._y = prevY;
+					board[prevY][prevX] = fgr;
+					board[y][x] = undefined;
+					if (removingFgr)
+					{
+						enemies.push(removingFgr);
+						board[y][x] = undefined;
+						board[removingFgr._y][removingFgr._x] = removingFgr;
+					}
+					return !checkTo;
+				}
+				if (fgr._type == "pawn" && (fgr._y == 0 || fgr._y == size - 1))
+				{
+					if (!newType)
+						AddDialog(fgr, enemies);
+					else
+					{
+						fgr._type = newType;
+						gameStatus = "WaitingForOpponent";
+					}
+				}
+				else 
+					CheckTheMateTo(enemies);
+			}
+			
+			return true;
+		}
+		
+		var newType;
+		function AddDialog(pawn, figures)
+		{
+			var divEl = adddiv(pawn);
+			$(divEl).dialog({
+				dialogClass: "no-close",
+				resizable: false,
+				height:140,
+				width:$(divEl).width,
+				modal: true
+			})
+			.click(function () {
+				CheckTheMateTo(figures);
+				DrawFigures();
+			});
+		}
+		
+		var PawnToChange;
+		function adddiv(pawn)
+		{
+			PawnToChange = pawn;
+			var d = document.createElement('table');
+			$(d).addClass('menu')
+			var color = pawn._color;
+			var getTdImgStr = function(type)
+			{
+				return '<td class = "menuCell"><img class="figure" src ="' + type + '_' + color + '.png" onclick = "PawnToChange._type = \'' + type + '\'; PawnToChange = undefined;"></td>';
+			}
+			$(d).addClass('menu')
+			.html('<tr>' + getTdImgStr("queen") + getTdImgStr("rook") + getTdImgStr("bishop") + getTdImgStr("knight") + '</tr>')
+			.click(function(){
+				if (!PawnToChange)
+				{
+					$(this).remove();
+					data.newfigure = pawn._type;
+					socket.emit('makeMove', data);
+					gameStatus = "WaitingForOpponent";
+				}
+			})
+			return d;
+		}
+		
+		function IsCheckTo(y, x, enemies)
+		{
+			var length = enemies.length;   
+			for (var i = 0; i < length; i++)
+			{
+				var enemy = enemies[i];
+				enemy.DefineAvailableMoves(true, true);
+				var len = enemy._availableMoves.length;
+				for (var j = 0; j < len; j++)
+				{
+					var availableMove = enemy._availableMoves[j];
+					if (availableMove.x == x && availableMove.y == y && !availableMove.notMelee)
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		function CheckTheMateTo(figures)
+		{
+			var length = figures.length;   
+			for (var i = 0; i < length; i++)
+			{
+				var fgr = figures[i];
+				fgr.DefineAvailableMoves(true, false);
+				var len = fgr._availableMoves.length;
+				for (var j = 0; j < len; j++)
+				{
+					var availableMove = fgr._availableMoves[j];
+					if (SetFigure(fgr, availableMove.y, availableMove.x, true))
+						return;
+				}
+			}
+			Mate = figures[0]._color;
+			return;
+		}
+		
+		function CreateAndSetFigure(y, x, color, type)
+		{
+			var fgr = new Figure(y, x, color, type);
+			if (type == "pawn" || type == "king" || type == "rook")
+				fgr._firstStep = true;
+			board[y][x] = fgr;
+			if (color == "black")
+			{
+				arrayBlack.push(fgr);
+				if (type == "king")
+					blackKing = fgr;
+			}
+			else
+			{
+				arrayWhite.push(fgr);
+				if (type == "king")
+					whiteKing = fgr;
+			}
+		}
+		
+		function DrawFigures()
+		{
+			$('td').not('.menuCell').html('');
+			$('td').css('background-color', '');
+			DrawFiguresArr(arrayBlack);
+			DrawFiguresArr(arrayWhite);
+			if (Mate)
+				alert("It's the mate to " + Mate);
+			if (fgrChecked)
+			{
+				var cellOfChecked = $('td[x = ' + fgrChecked._x + '][y = ' + fgrChecked._y + ']');
+				cellOfChecked.css('background-color', cellOfChecked.attr('class') == 'white_cell' ? '#CC9933' : '#660000');
+			}
+		}
+		function DrawFiguresArr(Figures)
+		{
+			var length = Figures.length;   
+			for (var i = 0; i < length; i++)
+			{
+				var fgr = Figures[i];
+			    if (fgr == undefined)
+					continue;
+			    $('td[x =' + fgr._x + '][y =' + fgr._y + ']').html('<img class="figure" src ="' +fgr._type + '_' + fgr._color + '.png">');
+			}
+		}
+		
+		function DrawBoard()
+		{
+			var chessHTML = "<table class = \"chess_board\" id=\"chess_board\">";  
+			var black = false;
+			for (y = 0; y < size; y++)
+			{
+				chessHTML += '<tr>';
+				for (x = 0; x < size; x++)
+				{
+						chessHTML += "<td class =" + (black ? 'black_cell' : 'white_cell') + " x = '" + x + "' y = '" + y + "'</td>";
+					black = !black;
+				}
+				chessHTML += '</tr>';
+				black = !black;
+			}
+			chessHTML += '</table>';
+			$('body').html(chessHTML);
+			$('#chess_board').click(function(event){BoardClickHandler(event)});
+		}
+		
+		function BoardClickHandler(e)
+		{
+			if (gameStatus != "moveMaking")
+				return;
+			//event = event || window.event;
+			var target = e && e.target || e.srcElement;//event.target || event.srcElement; 
+
+			while(target != this)
+			{
+				if (target.tagName == 'TD')
+				{
+					var cell =  $(target);
+					var y = parseInt(cell.attr('y'));
+					var x = parseInt(cell.attr('x'));
+					break;
+				}
+				target = target.parentNode;
+			}
+			if (HandleInput(x, y))
+			{
+				DrawFigures();
+				if (!fgrChecked)
+					gameStatus = "WaitingForOpponent";
+			}
+		}
+		
+		var data;
+		function HandleInput(x, y)
+		{
+			if (fgrChecked)
+			{
+				var xFrom = fgrChecked._x;
+				var yFrom = fgrChecked._y;
+				var typeFrom = fgrChecked._type;
+				if (x == xFrom && y == yFrom)
+				{
+					fgrChecked = undefined;
+					DrawFigures();
+					return false;
+				}
+				if (!fgrChecked.TryMove(y, x))
+					return false;
+				if (gameStatus == "moveMaking")
+				{
+					data = {xfrom : xFrom, xto : x, yfrom : yFrom, yto : y};
+					if (fgrChecked._type == "pawn" && (y == 0 || y == 7)) //for asynchronous handling of figure changing
+					{
+						fgrChecked = undefined;
+						return false;
+					}
+					socket.emit('makeMove', data);
+				}
+				fgrChecked = undefined;
+			}
+			else 
+			{
+				var fgr = board[y][x];
+				if ((fgr == undefined) || (gameStatus == "moveMaking" && thisColor != fgr._color) || (gameStatus == "moveReceived" && thisColor == fgr._color))
+					return false;
+				fgr.DefineAvailableMoves(false, false);
+				fgrChecked = fgr;
+			}
+			return true;
+		}
+	</script>
+</html>
